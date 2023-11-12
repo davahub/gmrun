@@ -969,6 +969,7 @@ static gboolean
 on_key_press(GtkCompletionLine *cl, GdkEventKey *event, gpointer data)
 { // https://developer.gnome.org/gtk2/stable/GtkWidget.html#GtkWidget-key-press-event
    int key = event->keyval;
+   /* printf ("mykey %d\n", key); */
    switch (key)
    {
       case GDK_KEY(Control_R):
@@ -978,6 +979,21 @@ on_key_press(GtkCompletionLine *cl, GdkEventKey *event, gpointer data)
       case GDK_KEY(Alt_R):
       case GDK_KEY(Alt_L):
          break;
+      case GDK_KEY(j):
+         if (event->state & 65513) {
+            /* alt+j exit */ 
+            if (cl->hist_search_mode == TRUE) {
+               search_off(cl);
+            } else if (cl->win_compl != NULL) {
+               destroy_completion_window (cl);
+            } else {
+               // user cancelled
+               g_signal_emit_by_name(G_OBJECT(cl), "cancel");
+            }
+         } else {
+             goto ordinary;
+         } 
+        return TRUE;
 
       case GDK_KEY(Tab):
          if (timeout_id != 0) {
